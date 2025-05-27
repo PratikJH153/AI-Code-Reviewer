@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAction } from "convex/react";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import { api } from "../../convex/_generated/api";
 
 interface ReviewButtonProps {
   selectedFile: string;
@@ -18,25 +19,26 @@ export function ReviewButton({
   setReview,
 }: ReviewButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const createReviewAgent = useAction(api.agent.createCodeReviewThread);
 
   const handleReview = async () => {
     if (!selectedFile) return;
 
     setIsLoading(true);
 
-    // try {
-    // //   const { text } = await createReviewAgent({
-    // //     prompt:
-    // //       "Please review this code and provide detailed feedback with line numbers.",
-    // //     code: fileContent,
-    // //   });
+    try {
+      const { text } = await createReviewAgent({
+        prompt:
+          "Please review this code and provide detailed feedback with line numbers.",
+        code: fileContent,
+      });
 
-    // //   setReview(text);
-    // } catch (error) {
-    //   console.error("Error creating review:", error);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      setReview(text);
+    } catch (error) {
+      console.error("Error creating review:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
